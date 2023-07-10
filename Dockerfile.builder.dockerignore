@@ -1,0 +1,9 @@
+build/*
+deployments/*
+vendor/*
+release/*
+tests/*
+docs/*
+bbr
+bbsim
+bbsimctl

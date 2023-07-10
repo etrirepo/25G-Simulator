@@ -1,0 +1,1092 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "bbsim/bbsim.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/olt": {
+      "get": {
+        "summary": "Get current status of OLT",
+        "operationId": "GetOlt",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimOlt"
+            }
+          }
+        },
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/flows": {
+      "get": {
+        "summary": "Get all flows or ONU specific flows",
+        "operationId": "GetFlows2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimFlows"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "SerialNumber",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/onus": {
+      "get": {
+        "summary": "Get status of all ONUs",
+        "operationId": "GetONUs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimONUs"
+            }
+          }
+        },
+        "tags": [
+          "BBSim"
+        ]
+      },
+      "delete": {
+        "summary": "Shutdown all ONUs in OLT",
+        "operationId": "ShutdownAllONUs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "tags": [
+          "BBSim"
+        ]
+      },
+      "post": {
+        "summary": "Poweron all ONUs in OLT",
+        "operationId": "PoweronAllONUs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/onus/{OnuReq.SerialNumber}/igmp": {
+      "post": {
+        "summary": "Change IGMP state",
+        "operationId": "ChangeIgmpState",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "OnuReq.SerialNumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/onus/{SerialNumber}": {
+      "get": {
+        "summary": "Get status of an ONU by serial number",
+        "operationId": "GetONU",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimONU"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "SerialNumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      },
+      "delete": {
+        "summary": "Shutdown an ONU by serial number",
+        "operationId": "ShutdownONU",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "SerialNumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      },
+      "post": {
+        "summary": "Poweron an ONU by serial number",
+        "operationId": "PoweronONU",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "SerialNumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/onus/{SerialNumber}/alarms/{AlarmType}/{Status}": {
+      "post": {
+        "summary": "Send ONU alarm indication",
+        "operationId": "SetOnuAlarmIndication",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "SerialNumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "AlarmType",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Status",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/onus/{SerialNumber}/dhcp": {
+      "post": {
+        "summary": "Restart DHCP for ONU",
+        "operationId": "RestartDhcp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "SerialNumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/onus/{SerialNumber}/eapol": {
+      "post": {
+        "summary": "Restart EAPOL for ONU",
+        "operationId": "RestartEapol",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "SerialNumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/onus/{SerialNumber}/flows": {
+      "get": {
+        "summary": "Get all flows or ONU specific flows",
+        "operationId": "GetFlows",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimFlows"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "SerialNumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/onus/{SerialNumber}/trafficschedulers": {
+      "get": {
+        "summary": "Get Traffic scheduler information for ONU",
+        "operationId": "GetOnuTrafficSchedulers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimONUTrafficSchedulers"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "SerialNumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/port/{PonPortId}/onus": {
+      "delete": {
+        "summary": "Shutdown all ONUs under a PON by pon-port-ID",
+        "operationId": "ShutdownONUsOnPON",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "PonPortId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      },
+      "post": {
+        "summary": "Poweron all ONUs under a PON by pon-port-ID",
+        "operationId": "PoweronONUsOnPON",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "PonPortId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/ports/{InterfaceType}/{InterfaceID}/alarms/los/{Status}": {
+      "post": {
+        "summary": "Send OLT alarm indication for Interface type NNI or PON",
+        "operationId": "SetOltAlarmIndication",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "InterfaceType",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "InterfaceID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "Status",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/reboot": {
+      "post": {
+        "summary": "Reboot OLT",
+        "operationId": "RebootOlt",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimResponse"
+            }
+          }
+        },
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/olt/status": {
+      "get": {
+        "summary": "Get current status of OLT",
+        "operationId": "GetOlt2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimOlt"
+            }
+          }
+        },
+        "tags": [
+          "BBSim"
+        ]
+      }
+    },
+    "/v1/version": {
+      "get": {
+        "summary": "Get BBSim version",
+        "operationId": "Version",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bbsimVersionNumber"
+            }
+          }
+        },
+        "tags": [
+          "BBSim"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "bbsimAlarmParameter": {
+      "type": "object",
+      "properties": {
+        "Key": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      }
+    },
+    "bbsimFlows": {
+      "type": "object",
+      "properties": {
+        "flow_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "flows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/openoltFlow"
+          }
+        }
+      }
+    },
+    "bbsimLogLevel": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string"
+        },
+        "caller": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "bbsimNNIPort": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "OperState": {
+          "type": "string"
+        }
+      }
+    },
+    "bbsimONU": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "SerialNumber": {
+          "type": "string"
+        },
+        "OperState": {
+          "type": "string"
+        },
+        "InternalState": {
+          "type": "string"
+        },
+        "PonPortID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "HwAddress": {
+          "type": "string"
+        },
+        "PortNo": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/bbsimService"
+          }
+        }
+      }
+    },
+    "bbsimONURequest": {
+      "type": "object",
+      "properties": {
+        "SerialNumber": {
+          "type": "string"
+        }
+      }
+    },
+    "bbsimONUTrafficSchedulers": {
+      "type": "object",
+      "properties": {
+        "traffSchedulers": {
+          "$ref": "#/definitions/tech_profileTrafficSchedulers"
+        }
+      }
+    },
+    "bbsimONUs": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/bbsimONU"
+          }
+        }
+      }
+    },
+    "bbsimOlt": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "SerialNumber": {
+          "type": "string"
+        },
+        "OperState": {
+          "type": "string"
+        },
+        "InternalState": {
+          "type": "string"
+        },
+        "IP": {
+          "type": "string"
+        },
+        "NNIPorts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/bbsimNNIPort"
+          }
+        },
+        "PONPorts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/bbsimPONPort"
+          }
+        }
+      }
+    },
+    "bbsimPONPort": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "OperState": {
+          "type": "string"
+        }
+      }
+    },
+    "bbsimResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "bbsimService": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "HwAddress": {
+          "type": "string"
+        },
+        "OnuSn": {
+          "type": "string"
+        },
+        "STag": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "CTag": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "NeedsEapol": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "NeedsDhcp": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "NeedsIgmp": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "GemPort": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "EapolState": {
+          "type": "string"
+        },
+        "DhcpState": {
+          "type": "string"
+        },
+        "InternalState": {
+          "type": "string"
+        },
+        "IGMPState": {
+          "type": "string"
+        }
+      }
+    },
+    "bbsimServices": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/bbsimService"
+          }
+        }
+      }
+    },
+    "bbsimSubActionTypes": {
+      "type": "string",
+      "enum": [
+        "JOIN",
+        "LEAVE",
+        "JOINV3"
+      ],
+      "default": "JOIN"
+    },
+    "bbsimVersionNumber": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "buildTime": {
+          "type": "string"
+        },
+        "commitHash": {
+          "type": "string"
+        },
+        "gitStatus": {
+          "type": "string"
+        }
+      }
+    },
+    "openoltAction": {
+      "type": "object",
+      "properties": {
+        "cmd": {
+          "$ref": "#/definitions/openoltActionCmd"
+        },
+        "o_vid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "o_pbits": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "o_tpid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "i_vid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "i_pbits": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "i_tpid": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "openoltActionCmd": {
+      "type": "object",
+      "properties": {
+        "add_outer_tag": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "remove_outer_tag": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "trap_to_host": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "remark_outer_pbits": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "remark_inner_pbits": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "add_inner_tag": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "remove_inner_tag": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "translate_inner_tag": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "translate_outer_tag": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "openoltClassifier": {
+      "type": "object",
+      "properties": {
+        "o_tpid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "o_vid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "i_tpid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "i_vid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "o_pbits": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "i_pbits": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "eth_type": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "dst_mac": {
+          "type": "string",
+          "format": "byte"
+        },
+        "src_mac": {
+          "type": "string",
+          "format": "byte"
+        },
+        "ip_proto": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "dst_ip": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "src_ip": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "src_port": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "dst_port": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "pkt_tag_type": {
+          "type": "string"
+        }
+      }
+    },
+    "openoltFlow": {
+      "type": "object",
+      "properties": {
+        "access_intf_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "onu_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "uni_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "flow_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "symmetric_flow_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "flow_type": {
+          "type": "string"
+        },
+        "alloc_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "network_intf_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "gemport_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "classifier": {
+          "$ref": "#/definitions/openoltClassifier"
+        },
+        "action": {
+          "$ref": "#/definitions/openoltAction"
+        },
+        "priority": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cookie": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "port_no": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "group_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "tech_profile_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "replicate_flow": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "pbit_to_gemport": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "tech_profileAdditionalBW": {
+      "type": "string",
+      "enum": [
+        "AdditionalBW_None",
+        "AdditionalBW_NA",
+        "AdditionalBW_BestEffort",
+        "AdditionalBW_Auto"
+      ],
+      "default": "AdditionalBW_None"
+    },
+    "tech_profileDirection": {
+      "type": "string",
+      "enum": [
+        "UPSTREAM",
+        "DOWNSTREAM",
+        "BIDIRECTIONAL"
+      ],
+      "default": "UPSTREAM"
+    },
+    "tech_profileInferredAdditionBWIndication": {
+      "type": "string",
+      "enum": [
+        "InferredAdditionBWIndication_None",
+        "InferredAdditionBWIndication_Assured",
+        "InferredAdditionBWIndication_BestEffort"
+      ],
+      "default": "InferredAdditionBWIndication_None"
+    },
+    "tech_profileSchedulerConfig": {
+      "type": "object",
+      "properties": {
+        "direction": {
+          "$ref": "#/definitions/tech_profileDirection"
+        },
+        "additional_bw": {
+          "$ref": "#/definitions/tech_profileAdditionalBW"
+        },
+        "priority": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "sched_policy": {
+          "$ref": "#/definitions/tech_profileSchedulingPolicy"
+        }
+      }
+    },
+    "tech_profileSchedulingPolicy": {
+      "type": "string",
+      "enum": [
+        "WRR",
+        "StrictPriority",
+        "Hybrid"
+      ],
+      "default": "WRR"
+    },
+    "tech_profileTrafficScheduler": {
+      "type": "object",
+      "properties": {
+        "direction": {
+          "$ref": "#/definitions/tech_profileDirection"
+        },
+        "alloc_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "scheduler": {
+          "$ref": "#/definitions/tech_profileSchedulerConfig"
+        },
+        "traffic_shaping_info": {
+          "$ref": "#/definitions/tech_profileTrafficShapingInfo"
+        },
+        "tech_profile_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "tech_profileTrafficSchedulers": {
+      "type": "object",
+      "properties": {
+        "intf_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "onu_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "uni_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "port_no": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "traffic_scheds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tech_profileTrafficScheduler"
+          }
+        }
+      }
+    },
+    "tech_profileTrafficShapingInfo": {
+      "type": "object",
+      "properties": {
+        "cir": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "cbs": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "pir": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "pbs": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "gir": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "add_bw_ind": {
+          "$ref": "#/definitions/tech_profileInferredAdditionBWIndication"
+        }
+      }
+    }
+  }
+}

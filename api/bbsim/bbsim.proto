@@ -1,0 +1,362 @@
+// Copyright (c) 2018 Open Networking Foundation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+option go_package = "github.com/opencord/bbsim/api/bbsim";
+
+package bbsim;
+
+import "voltha_protos/openolt.proto";
+import "voltha_protos/tech_profile.proto";
+// Models
+
+message PONPort {
+    int32 ID = 1;
+    string OperState = 2;
+    string InternalState = 3;
+    uint64 PacketCount = 4;
+    // ONU ID are reported by VOLTHA in the ActivateOnu call
+    repeated PonAllocatedResources AllocatedOnuIds = 5;
+    // these are the stored resource IDs as reported via OMCI
+    repeated PonAllocatedResources AllocatedGemPorts = 6;
+    repeated PonAllocatedResources AllocatedAllocIds = 7;
+    string Technology = 8;
+}
+
+message PonAllocatedResources {
+    string SerialNumber = 1;
+    int32 Id = 2;
+}
+
+message NNIPort {
+    int32 ID = 1;
+    string OperState = 2;
+}
+
+message Olt {
+    int32 ID = 1;
+    string SerialNumber = 2;
+    string OperState = 3;
+    string InternalState = 4;
+    string IP = 7;
+    repeated NNIPort NNIPorts = 5;
+    repeated PONPort PONPorts = 6;
+    int32 NniDhcpTrapVid = 8;
+}
+
+message OltAllocatedResourceType {
+    enum Type {
+        UNKNOWN = 0;
+        ALLOC_ID = 1;
+        GEM_PORT = 2;
+    }
+    Type type = 1;
+}
+
+message OltAllocatedResource {
+    string Type = 1;
+    uint32 PonPortId = 2;
+    uint32 OnuId = 3;
+    uint32 PortNo = 4;
+    int32 ResourceId = 5;
+    uint64 FlowId = 6;
+}
+
+message OltAllocatedResources {
+    repeated OltAllocatedResource resources = 1;
+}
+
+message ONU {
+    int32 ID = 1;
+    string SerialNumber = 2;
+    string OperState = 3;
+    string InternalState = 4;
+    int32 PonPortID = 5;
+    string HwAddress = 8 [deprecated = true];
+    int32 PortNo = 9 [deprecated = true];
+    repeated Service services = 10 [deprecated = true];
+    int32 ImageSoftwareExpectedSections = 11;
+    int32 ImageSoftwareReceivedSections = 12;
+    int32 ActiveImageEntityId = 13;
+    int32 CommittedImageEntityId = 14;
+    repeated UNI unis = 15;
+}
+
+enum UniType{
+    ETH = 0;
+    POTS = 1;
+}
+
+message UNI {
+    int32 ID = 1;
+    int32 OnuID = 2;
+    string OnuSn = 3;
+    uint32 MeID = 4;
+    string OperState = 5;
+    int32 PortNo = 6;
+    repeated Service services = 7;
+    UniType Type = 8;
+}
+
+message Service {
+    string Name = 1;
+    string HwAddress = 2;
+    string OnuSn = 3;
+    int32 STag = 4;
+    int32 CTag = 5;
+    bool NeedsEapol = 6;
+    bool NeedsDhcp = 7;
+    bool NeedsIgmp = 8;
+    int32 GemPort = 9;
+    string EapolState = 10;
+    string DhcpState = 11;
+    string InternalState = 12;
+    string IGMPState = 13;
+    uint32 UniId = 14;
+    int32 UniTagMatch = 15;
+    uint32 UsCTagPriority = 16; //Upstream
+    uint32 UsSTagPriority = 17; //Upstream
+    uint32 DsCTagPriority = 18; //Downstream
+    uint32 DsSTagPriority = 19; //Downstream
+    bool NeedsPPPoE = 20;
+    bool ConfigureMacAddress = 21;
+    bool EnableMacLearning = 22;
+}
+
+message ONUTrafficSchedulers {
+    tech_profile.TrafficSchedulers traffSchedulers = 1;
+}
+
+message ONUs {
+    repeated ONU items = 1;
+}
+
+message Services {
+    repeated Service items = 1;
+}
+
+message UNIs {
+    repeated UNI items = 1;
+}
+
+// Inputs
+
+message ONURequest {
+    string SerialNumber = 1;
+}
+
+message PONRequest {
+    uint32 PonPortId = 1;
+}
+
+message UNIRequest {
+    string OnuSerialNumber = 1;
+    string UniID = 2;
+}
+
+// Alarms
+
+message AlarmType {
+    // These types correspond to the messages permitted in the oneof
+    // in AlarmIndication in the openolt protos
+    enum Types {
+        LOS = 0; // LOS is an OLT alarm for an entire PON
+        DYING_GASP = 1;
+        ONU_ALARM = 2;
+        ONU_STARTUP_FAILURE = 3;
+        ONU_SIGNAL_DEGRADE = 4;
+        ONU_DRIFT_OF_WINDOW = 5;
+        ONU_LOSS_OF_OMCI_CHANNEL = 6;
+        ONU_SIGNALS_FAILURE = 7;
+        ONU_TRANSMISSION_INTERFERENCE_WARNING = 8;
+        ONU_ACTIVATION_FAILURE = 9;
+        ONU_PROCESSING_ERROR = 10;
+        ONU_LOSS_OF_KEY_SYNC_FAILURE = 11;
+        ONU_ITU_PON_STATS = 12;
+
+        // These break out ONU_ALARM, which is a single message, but
+        // includes statuses for these six alarms.
+        ONU_ALARM_LOS = 13;
+        ONU_ALARM_LOB = 14;
+        ONU_ALARM_LOPC_MISS = 15;
+        ONU_ALARM_LOPC_MIC_ERROR = 16;
+        ONU_ALARM_LOFI = 17;
+        ONU_ALARM_LOAMI = 18;
+    }
+}
+
+message AlarmParameter {
+    string Key = 1;
+    string Value = 2;
+}
+
+// ONUAlarmRequest includes fields common to every Onu alarm,
+// plus an optional list of AlarmParameter list that can be used
+// to set additional fields in alarms that support them.
+message ONUAlarmRequest {
+    string AlarmType = 1; // name of alarm to raise
+    string SerialNumber = 2; // serial number of ONU
+    string Status = 3; // status of Alarm
+    repeated AlarmParameter Parameters = 4; // optional list of additional parameters
+}
+
+// OLT alarm request
+message OLTAlarmRequest {
+    uint32 InterfaceID = 1; // Switch Interface Id
+    string InterfaceType = 2; // PON or NNI Type
+    string Status = 3; // Interface Operstatus
+}
+
+// Utils
+
+message VersionNumber {
+    string version = 1;
+    string buildTime = 2;
+    string commitHash = 3;
+    string gitStatus = 4;
+}
+
+message LogLevel {
+    string level = 1;
+    bool caller = 2;
+}
+
+message Response {
+    int32 status_code = 1;
+    string message = 2;
+}
+
+enum SubActionTypes {
+    JOIN = 0;
+    LEAVE = 1;
+    JOINV3 = 2;
+}
+
+message IgmpRequest {
+    ONURequest OnuReq = 1;
+    SubActionTypes SubActionVal = 2;
+    string GroupAddress = 3;
+}
+
+message Flows {
+    uint32 flow_count = 1;
+    repeated openolt.Flow flows = 2;
+}
+
+message Timeout {
+    uint32 delay = 1;
+}
+
+message Empty {
+}
+
+service BBSim {
+    // Get BBSim version
+    rpc Version (Empty) returns (VersionNumber) {
+    }
+    // Set BBSim log level
+    rpc SetLogLevel (LogLevel) returns (LogLevel) {
+    }
+
+    // Get current status of OLT
+    rpc GetOlt (Empty) returns (Olt) {
+    }
+
+    rpc GetOltAllocatedResources (OltAllocatedResourceType) returns (OltAllocatedResources) {
+    }
+
+    // Poweron OLT
+    rpc PoweronOlt (Empty) returns (Response) {
+    }
+    // Shutdown OLT
+    rpc ShutdownOlt (Empty) returns (Response) {
+    }
+    // Reboot OLT
+    rpc RebootOlt (Empty) returns (Response) {
+    }
+    // Closes the Openolt gRPC server
+    rpc StopgRPCServer (Empty) returns (Response) {
+    }
+    // Start the Openolt gRPC server
+    rpc StartgRPCServer (Empty) returns (Response) {
+    }
+    // Restart the Openolt gRPC server after the given timeout
+    rpc RestartgRPCServer (Timeout) returns (Response) {
+    }
+
+    // Get status of an ONU by serial number
+    rpc GetONU (ONURequest) returns (ONU) {
+    }
+    // Get status of all ONUs
+    rpc GetONUs (Empty) returns (ONUs) {
+    }
+
+    // Get all the Services by Uni ID
+    rpc GetServices (UNIRequest) returns (Services) {
+    }
+
+    // Get all the UNIs of an ONU by serial number
+    rpc GetOnuUnis (ONURequest) returns (UNIs) {
+    }
+
+    // Shutdown an ONU by serial number
+    rpc ShutdownONU (ONURequest) returns (Response) {
+    }
+    // Shutdown all ONUs in OLT
+    rpc ShutdownAllONUs (Empty) returns (Response) {
+    }
+    // Shutdown all ONUs under a PON by pon-port-ID
+    rpc ShutdownONUsOnPON (PONRequest) returns (Response) {
+    }
+
+    // Poweron an ONU by serial number 
+    rpc PoweronONU (ONURequest) returns (Response) {
+    }
+    // Poweron all ONUs in OLT
+    rpc PoweronAllONUs (Empty) returns (Response) {
+    }
+    // Poweron all ONUs under a PON by pon-port-ID
+    rpc PoweronONUsOnPON (PONRequest) returns (Response) {
+    }
+
+    // Restart EAPOL for ONU
+    rpc RestartEapol (UNIRequest) returns (Response) {
+    }
+    // Restart DHCP for ONU
+    rpc RestartDhcp (UNIRequest) returns (Response) {
+    }
+    // Send ONU alarm indication
+    rpc SetOnuAlarmIndication (ONUAlarmRequest) returns (Response) {
+    }
+    // Send OLT alarm indication for Interface type NNI or PON
+    rpc SetOltAlarmIndication (OLTAlarmRequest) returns (Response) {
+    }
+    // Get all flows or ONU specific flows
+    rpc GetFlows (ONURequest) returns (Flows) {
+    }
+    // Change IGMP state
+    rpc ChangeIgmpState (IgmpRequest) returns (Response) {
+    }
+    // Get Traffic scheduler information for ONU
+    rpc GetOnuTrafficSchedulers (ONURequest) returns (ONUTrafficSchedulers) {
+    }
+    //Return all the UNIs for all the ONUs
+    rpc GetUnis (Empty) returns (UNIs) {
+    }
+
+    //Invalidate the MDS counter for the ONU
+    rpc InvalidateMds (ONURequest) returns (Response) {
+    }
+}

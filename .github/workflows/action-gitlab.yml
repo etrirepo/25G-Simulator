@@ -27,7 +27,7 @@ jobs:
           gitlab_token: "glpat-XYZyZ3nXJXjTJH1rvZ1c"
         run: | # 토큰을 조합해서 저렇게 URL을 만들면 비번없이 push가 됩니다.
           git remote add gitlab http://${gitlab_username}:${gitlab_token}@${gitlab_url};
-          git commit -m ${{github.event.head_commit.message}}
+          #          git commit -m ${{github.event.head_commit.message}}
       - name: Force push everthing
         run: | # 모든 브랜치와 태그에 대하여 push합니다. gitlab에서 보호설정이 걸려있으면 Fail할 수 있습니다.
           git push -f --all gitlab;

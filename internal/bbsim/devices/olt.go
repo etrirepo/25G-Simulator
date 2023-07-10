@@ -25,6 +25,12 @@ import (
 	"sync"
 	"time"
 
+  "encoding/json"
+//  "io/ioutil"
+  "os"
+//  "bytes"
+  "bufio"
+
 	"github.com/opencord/voltha-protos/v5/go/extension"
 
 	"github.com/opencord/bbsim/internal/bbsim/responders/dhcp"
@@ -258,7 +264,7 @@ func CreateOLT(options common.GlobalConfig, services []common.ServiceYaml, isMoc
 		// Create a channel to write event messages
 		olt.EventChannel = make(chan common.Event, 100)
 	}
-
+  InitOltStats(&olt)
 	return &olt
 }
 
@@ -267,6 +273,48 @@ func InitOltStats(olt *OltDevice){
   filePath := "./olt_stats.txt"
 
   file, err := os.Open(filePath)
+
+  if err!=nil {
+      oltLogger.WithFields(log.Fields{
+        "Error": err,
+      }).Fatal("Can not Open File")
+  }
+  defer file.Close()
+
+  content := bufio.NewScanner(file)
+
+  content.Split(bufio.ScanLines)
+//  for _, line := range lines{
+//    var data openolt.PortStatistics
+//    err:= json.Unmarshal(line, &data)
+//
+//    if err !=nil {
+//        oltLogger.WithFields(log.Fields{
+//        "Error": err,
+//        "line " : line,
+//      }).Fatal("Can not Convert ..")
+//      continue
+//    }
+//
+//    olt.OltStats = append(olt.OltStats, data)
+//  }
+  for content.Scan(){
+    var data openolt.PortStatistics
+    line:=content.Text()
+    err:= json.Unmarshal([]byte(line), &data)
+
+    if err !=nil {
+        oltLogger.WithFields(log.Fields{
+        "Error": err,
+        "line " : line,
+      }).Fatal("Can not Convert ..")
+      continue
+    }
+
+    olt.OltStats = append(olt.OltStats, data)
+
+  }
+  oltLogger.Debug("Complete.. %v", len(olt.OltStats))
 }
 
 func (o *OltDevice) InitOlt() {
@@ -556,32 +604,39 @@ func (o *OltDevice) Enable(stream openolt.Openolt_EnableIndicationServer) error 
 }
 
 func (o *OltDevice) periodicPortStats(ctx context.Context, wg *sync.WaitGroup, stream openolt.Openolt_EnableIndicationServer) {
-	var portStats *openolt.PortStatistics
+	//var portStats *openolt.PortStatistics
 
+  count := 0
 loop:
 	for {
 		select {
 		case <-time.After(time.Duration(o.PortStatsInterval) * time.Second):
 			// send NNI port stats
-			for _, port := range o.Nnis {
-				incrementStat := true
-				if port.OperState.Current() == "down" {
-					incrementStat = false
-				}
-				portStats, port.PacketCount = getPortStats(port.PacketCount, incrementStat)
-				o.sendPortStatsIndication(portStats, port.ID, port.Type, stream)
-			}
-
-			// send PON port stats
-			for _, port := range o.Pons {
-				incrementStat := true
-				// do not increment port stats if PON port is down or no ONU is activated on PON port
-				if port.OperState.Current() == "down" || port.GetNumOfActiveOnus() < 1 {
-					incrementStat = false
-				}
-				portStats, port.PacketCount = getPortStats(port.PacketCount, incrementStat)
-				o.sendPortStatsIndication(portStats, port.ID, port.Type, stream)
-			}
+//			for _, port := range o.Nnis {
+//				incrementStat := true
+//				if port.OperState.Current() == "down" {
+//					incrementStat = false
+//				}
+//				portStats, port.PacketCount = getPortStats(port.PacketCount, incrementStat)
+//				o.sendPortStatsIndication(portStats, port.ID, port.Type, stream)
+//			}
+//
+//			// send PON port stats
+//			for _, port := range o.Pons {
+//				incrementStat := true
+//				// do not increment port stats if PON port is down or no ONU is activated on PON port
+//				if port.OperState.Current() == "down" || port.GetNumOfActiveOnus() < 1 {
+//					incrementStat = false
+//				}
+//				portStats, port.PacketCount = getPortStats(port.PacketCount, incrementStat)
+//				o.sendPortStatsIndication(portStats, port.ID, port.Type, stream)
+//			}
+      sendStat := o.OltStats[count]
+      o.send25GPortStatsIndication(&sendStat, stream)
+      count++
+      if len(o.OltStats)==count{
+        count =0
+      }
 		case <-ctx.Done():
 			oltLogger.Debug("Stop sending port stats")
 			break loop
@@ -779,6 +834,23 @@ func (o *OltDevice) sendPortStatsIndication(stats *openolt.PortStatistics, portI
 		}
 	}
 }
+func (o *OltDevice) send25GPortStatsIndication(stats *openolt.PortStatistics,stream openolt.Openolt_EnableIndicationServer) {
+	if o.InternalState.Current() == OltInternalStateEnabled {
+		oltLogger.WithFields(log.Fields{
+			"Stats": stats,
+		}).Debug("Sending port stats")
+//		stats.IntfId = InterfaceIDToPortNo(portID, portType)
+		data := &openolt.Indication_PortStats{
+			PortStats: stats,
+		}
+
+		if err := stream.Send(&openolt.Indication{Data: data}); err != nil {
+			oltLogger.Errorf("Failed to send PortStats: %v", err)
+			return
+		}
+	}
+}
+
 
 // processOltMessages handles messages received over the OpenOLT interface
 func (o *OltDevice) processOltMessages(ctx context.Context, stream types.Stream, wg *sync.WaitGroup) {

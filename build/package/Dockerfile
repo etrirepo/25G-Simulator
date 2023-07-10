@@ -42,7 +42,7 @@ FROM ubuntu:18.04
 WORKDIR /app
 COPY --from=builder /app/bbsim /app/bbsim
 COPY --from=builder /app/bbsimctl /usr/bin/bbsimctl
-COPY --from=builder /app/olt_stats.data /app/olt_stats.data
+COPY --from=builder /app/olt_stats.txt /app/olt_stats.txt
 COPY ./configs/ ./configs/
 RUN chmod a+x /app/bbsim
 RUN chmod a+x /usr/bin/bbsimctl

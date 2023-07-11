@@ -30,6 +30,15 @@ import (
 	"github.com/opencord/voltha-protos/v5/go/openolt"
 	log "github.com/sirupsen/logrus"
 )
+const (
+  typeMaxValue int32 = 2147483647
+  typeMinValue int32 = -2147483648
+)
+
+var upOctet int32 =0
+var upPacket int32 =0
+var downOctet int32 =0
+var downPacket int32=0
 
 func ParseGetRequest(omciPkt gopacket.Packet) (*omci.GetRequest, error) {
 	msgLayer := omciPkt.Layer(omci.LayerTypeGetRequest)
@@ -444,6 +453,11 @@ func createPptpPotsResponse(isExtended bool, attributeMask uint16, entityID uint
 }
 
 func createEthernetFramePerformanceMonitoringHistoryDataUpstreamResponse(isExtended bool, attributeMask uint16, entityID uint16) *omci.GetResponse {
+
+//  octets4 := [3302209889, ]
+//  octets13 :=[1070785, ]
+//  octets15 :=[4853670, ]
+//  octets16 :=[]
 	managedEntity, meErr := me.NewEthernetFramePerformanceMonitoringHistoryDataUpstream(me.ParamData{
 		EntityID: entityID,
 		Attributes: me.AttributeValueMap{
@@ -451,8 +465,8 @@ func createEthernetFramePerformanceMonitoringHistoryDataUpstreamResponse(isExten
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_IntervalEndTime:         0, // This ideally should increment by 1 every collection interval, but staying 0 for simulation is Ok for now.
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_ThresholdData12Id:       0,
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_DropEvents:              rand.Intn(100),
-			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_Octets:                  rand.Intn(100),
-			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_Packets:                 rand.Intn(100),
+			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_Octets:                  upOctet,
+			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_Packets:                 upPacket,
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_BroadcastPackets:        rand.Intn(100),
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_MulticastPackets:        rand.Intn(100),
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_CrcErroredPackets:       rand.Intn(100),
@@ -471,8 +485,16 @@ func createEthernetFramePerformanceMonitoringHistoryDataUpstreamResponse(isExten
 		omciLogger.Errorf("NewEthernetFramePerformanceMonitoringHistoryDataUpstream %v", meErr.Error())
 		return nil
 	}
+  upOctet += int32(rand.Intn(100))
+  upPacket += int32(rand.Intn(100))
+  if upOctet> typeMaxValue || upOctet < typeMinValue{
+    upOctet = 0
+  }
 
-	return &omci.GetResponse{
+  if upPacket > typeMaxValue || upPacket < typeMinValue{
+    upPacket = 0
+  }
+  response := &omci.GetResponse{
 		MeBasePacket: omci.MeBasePacket{
 			EntityClass:    me.EthernetFramePerformanceMonitoringHistoryDataUpstreamClassID,
 			EntityInstance: entityID,
@@ -482,6 +504,8 @@ func createEthernetFramePerformanceMonitoringHistoryDataUpstreamResponse(isExten
 		AttributeMask: attributeMask,
 		Result:        me.Success,
 	}
+
+  return response
 }
 
 func createEthernetFramePerformanceMonitoringHistoryDataDownstreamResponse(isExtended bool, attributeMask uint16, entityID uint16) *omci.GetResponse {
@@ -492,8 +516,8 @@ func createEthernetFramePerformanceMonitoringHistoryDataDownstreamResponse(isExt
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_IntervalEndTime:         0, // This ideally should increment by 1 every collection interval, but staying 0 for simulation is Ok for now.
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_ThresholdData12Id:       0,
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_DropEvents:              rand.Intn(100),
-			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_Octets:                  rand.Intn(100),
-			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_Packets:                 rand.Intn(100),
+			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_Octets:                  upOctet,
+			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_Packets:                 upPacket,
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_BroadcastPackets:        rand.Intn(100),
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_MulticastPackets:        rand.Intn(100),
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_CrcErroredPackets:       rand.Intn(100),
@@ -512,8 +536,17 @@ func createEthernetFramePerformanceMonitoringHistoryDataDownstreamResponse(isExt
 		omciLogger.Errorf("NewEthernetFramePerformanceMonitoringHistoryDataDownstream %v", meErr.Error())
 		return nil
 	}
+  downOctet += int32(rand.Intn(100))
+  downPacket += int32(rand.Intn(100))
+  if downOctet> typeMaxValue || downOctet < typeMinValue{
+    downOctet = 0
+  }
 
-	return &omci.GetResponse{
+  if downPacket > typeMaxValue || downPacket < typeMinValue{
+    downPacket = 0
+  }
+
+  response := &omci.GetResponse{
 		MeBasePacket: omci.MeBasePacket{
 			EntityClass:    me.EthernetFramePerformanceMonitoringHistoryDataDownstreamClassID,
 			EntityInstance: entityID,
@@ -523,9 +556,13 @@ func createEthernetFramePerformanceMonitoringHistoryDataDownstreamResponse(isExt
 		AttributeMask: attributeMask,
 		Result:        me.Success,
 	}
+
+  return response
 }
 
 func createEthernetPerformanceMonitoringHistoryDataResponse(isExtended bool, attributeMask uint16, entityID uint16) *omci.GetResponse {
+
+
 	managedEntity, meErr := me.NewEthernetPerformanceMonitoringHistoryData(me.ParamData{
 		EntityID: entityID,
 		Attributes: me.AttributeValueMap{

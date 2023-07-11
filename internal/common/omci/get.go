@@ -465,8 +465,8 @@ func createEthernetFramePerformanceMonitoringHistoryDataUpstreamResponse(isExten
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_IntervalEndTime:         0, // This ideally should increment by 1 every collection interval, but staying 0 for simulation is Ok for now.
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_ThresholdData12Id:       0,
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_DropEvents:              rand.Intn(100),
-			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_Octets:                  upOctet,
-			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_Packets:                 upPacket,
+			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_Octets:                  uint32(upOctet),
+			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_Packets:                 uint32(upPacket),
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_BroadcastPackets:        rand.Intn(100),
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_MulticastPackets:        rand.Intn(100),
 			me.EthernetFramePerformanceMonitoringHistoryDataUpstream_CrcErroredPackets:       rand.Intn(100),
@@ -516,8 +516,8 @@ func createEthernetFramePerformanceMonitoringHistoryDataDownstreamResponse(isExt
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_IntervalEndTime:         0, // This ideally should increment by 1 every collection interval, but staying 0 for simulation is Ok for now.
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_ThresholdData12Id:       0,
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_DropEvents:              rand.Intn(100),
-			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_Octets:                  upOctet,
-			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_Packets:                 upPacket,
+			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_Octets:                  uint32(upOctet),
+			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_Packets:                 uint32(upPacket),
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_BroadcastPackets:        rand.Intn(100),
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_MulticastPackets:        rand.Intn(100),
 			me.EthernetFramePerformanceMonitoringHistoryDataDownstream_CrcErroredPackets:       rand.Intn(100),

@@ -120,6 +120,7 @@ type OltDevice struct {
 }
 
 var olt OltDevice
+var latencyFlag bool = false
 
 func GetOLT() *OltDevice {
 	return &olt
@@ -840,6 +841,9 @@ func (o *OltDevice) send25GPortStatsIndication(stats *openolt.PortStatistics,str
 			"Stats": stats,
 		}).Debug("Sending port stats")
 //		stats.IntfId = InterfaceIDToPortNo(portID, portType)
+    if !latencyFlag {
+      stats.BipErrors = 0
+    }
 		data := &openolt.Indication_PortStats{
 			PortStats: stats,
 		}

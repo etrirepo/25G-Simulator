@@ -843,10 +843,16 @@ func (o *OltDevice) send25GPortStatsIndication(stats *openolt.PortStatistics,str
 //		stats.IntfId = InterfaceIDToPortNo(portID, portType)
     if !latencyFlag {
       stats.BipErrors = 0
+		  oltLogger.WithFields(log.Fields{
+			  "Stats": stats,
+		  }).Debug("latency not yet")
     }
 		data := &openolt.Indication_PortStats{
 			PortStats: stats,
 		}
+		  oltLogger.WithFields(log.Fields{
+			  "Stats": data,
+		  }).Debug("Send data")
 
 		if err := stream.Send(&openolt.Indication{Data: data}); err != nil {
 			oltLogger.Errorf("Failed to send PortStats: %v", err)

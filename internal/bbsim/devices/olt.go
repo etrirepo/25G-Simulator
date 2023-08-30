@@ -3108,6 +3108,7 @@ func(o *OltDevice) GetLatencyData(ctx context.Context, reqMessage *bossopenolt.B
                 VlanMode : 1,
                 Fields : "0x3064",
         }*/
+   latencyFlag =true
    response := &bossopenolt.BossLatencyDataResponse{
 		DeviceId: reqMessage.DeviceId,
     Pon : 0,
